@@ -12,7 +12,7 @@ module Jackknife
 
 import Statistics: mean, var
 
-export jackknife_full, jackknife
+export jackknife_full, jackknife, bin_jackknife_full, bin_jackknife
 
 
 """
