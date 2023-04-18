@@ -173,3 +173,40 @@ function _bin(A::Vector{T}, binsize) where {T <: Number}
     return samples
 end
 
+"""
+    bin_jackknife_full(g::Function, a[, b, ...])
+Returns the jackknife estimate, bias and error for a given function
+`g(<a>, <b>, ...)` acting on the means of the samples `a`, `b`, etc. after binning those samples.
+Example:
+    # Assuming some sample xs is given
+    # variance of sample xs
+    g(x2, x) = x2 - x^2
+    estimate, bias, error = jackknife_full(g, xs.^2, xs)
+See also: [`estimate`](@ref), [`bias`](@ref), [`std_error`](@ref)
+"""
+function bin_jackknife_full(g::Function, samples::AbstractVector{<:Number}...)
+    b_samples = _bin(samples)
+    reduced_results = leaveoneout(g, b_samples...)
+    return estimate(g, samples...; reduced_results = reduced_results),
+           bias(g, samples...; reduced_results = reduced_results),
+           _std_error(reduced_results)
+end
+
+
+"""
+    bin_jackknife_bin(g::Function, a[, b, ...])
+Returns the jackknife estimate and error for a given function `g(<a>, <b>, ...)`
+acting on the means of the samples `a`, `b`, etc. after binning those samples.
+Example:
+    # Assuming some sample xs is given
+    # variance of sample xs
+    g(x2, x) = x2 - x^2
+    error = jackknife(g, xs.^2, xs)
+See also: [`estimate`](@ref), [`std_error`](@ref)
+"""
+function bin_jackknife(g::Function, samples::AbstractVector{<:Number}...)
+    b_samples = _bin(samples)
+    reduced_results = leaveoneout(g, b_samples...)
+    return estimate(g, samples...; reduced_results = reduced_results),
+           _std_error(reduced_results)
+end
