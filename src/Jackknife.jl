@@ -159,13 +159,15 @@ end # module
 
 # NEWLY IMPLEMENTED: Prebinning + Jackknife
 
-function _bin(A::Vector{T}, binsize) where {T <: Number}
+function _bin(A::Vector{T}, nbins=256) where {T <: Number}
     # Create vector of binned samples
     # We choose 256 (instead of 32) as a default for reliable number of bins. Higher levels can get noisy due to too few samples.
-    samples = zeros(256)
+    samples = zeros(nbins)
+    binsize = fld(length(A), nbins)
     counter = 1
     for i in 1 : binsize : length(A) - binsize + 1
-        samples[counter] = @views mean(A[i : i+binsize-1])
+        blockmean = @views mean(A[i : i+binsize-1])
+        samples[counter] = blockmean
         counter += 1
     end
     return samples
