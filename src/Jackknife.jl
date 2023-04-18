@@ -157,13 +157,11 @@ end
 end # module
 
 
-# TODO: Prebinning + Jackknife
-
-# We choose 256 (instead of 32) as a default for reliable number of bins. Higher levels can get noisy due to too few samples
-
-# Create vector binned samples:
+# NEWLY IMPLEMENTED: Prebinning + Jackknife
 
 function _bin(A::Vector{T}, binsize) where {T <: Number}
+    # Create vector of binned samples
+    # We choose 256 (instead of 32) as a default for reliable number of bins. Higher levels can get noisy due to too few samples.
     samples = zeros(256)
     counter = 1
     for i in 1 : binsize : length(A) - binsize + 1
