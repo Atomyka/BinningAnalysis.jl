@@ -159,7 +159,7 @@ end # module
 
 # NEWLY IMPLEMENTED: Prebinning + Jackknife
 
-function _bin(A::Vector{T}, nbins=256) where {T <: Number}
+function _bin(A::Vector{T}; nbins=256) where {T <: Number}
     # Create vector of binned samples
     # We choose 256 (instead of 32) as a default for reliable number of bins. Higher levels can get noisy due to too few samples.
     samples = zeros(nbins)
@@ -204,8 +204,8 @@ Example:
     error = jackknife(g, xs.^2, xs)
 See also: [`estimate`](@ref), [`std_error`](@ref)
 """
-function bin_jackknife(g::Function, samples::AbstractVector{<:Number}...)
-    b_samples = _bin(samples)
+function bin_jackknife(g::Function, samples::AbstractVector{<:Number}...; nbins=256)
+    b_samples = _bin(samples; nbins=256)
     reduced_results = leaveoneout(g, b_samples...)
     return estimate(g, samples...; reduced_results = reduced_results),
            _std_error(reduced_results)
